@@ -1,0 +1,55 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "family quiz",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": [
+            "abbrechen",
+            "beenden",
+            "aufhören"
+          ]
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": [
+            "stopp",
+            "stop",
+            "beende das quiz",
+            "quiz beenden"
+          ]
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": [
+            "hilfe",
+            "was soll ich tun"
+          ]
+        },
+        {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        },
+        {
+          "name": "AnswerIntent",
+          "slots": [
+            {
+              "name": "answer",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "{answer}",
+            "ich denke {answer}",
+            "ich glaube {answer}",
+            "meine antwort ist {answer}",
+            "die antwort ist {answer}",
+            "ich sage {answer}"
+          ]
+        }
+      ],
+      "types": []
+    }
+  }
+}

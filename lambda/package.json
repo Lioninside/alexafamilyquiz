@@ -1,0 +1,13 @@
+{
+  "name": "family-quiz",
+  "version": "1.0.0",
+  "description": "Alexa FamilyQuiz Skill – Backend Lambda",
+  "main": "index.js",
+  "dependencies": {
+    "ask-sdk-core": "^2.14.0",
+    "ask-sdk-model": "^1.85.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
