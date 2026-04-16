@@ -109,6 +109,10 @@ const AnswerIntentHandler = {
     const gegebenAntwort = normalizeAnswer(antwortSlot || '');
     const richtigeAntwort = normalizeAnswer(aktFrage.answer);
 
+    // DEBUG: empfangene Antwort und Vergleich loggen
+    console.log('[DEBUG] AnswerIntent – Slot roh:', antwortSlot);
+    console.log('[DEBUG] AnswerIntent – normalisiert:', gegebenAntwort, '| erwartet:', richtigeAntwort);
+
     if (gegebenAntwort === richtigeAntwort) {
       // Richtig!
       attr.score++;
@@ -162,6 +166,9 @@ const FallbackIntentHandler = {
     }
 
     const aktFrage = questions[currentIndex];
+
+    // DEBUG: FallbackIntent statt AnswerIntent – deutet auf NLU-Routing-Problem hin
+    console.log('[DEBUG] FallbackIntent ausgelöst – repeatCount:', attr.repeatCount, '| aktuelle Frage:', aktFrage.question);
 
     if (attr.repeatCount === 0) {
       // Frage einmal wiederholen
