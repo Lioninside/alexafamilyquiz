@@ -105,6 +105,8 @@ Keine weiteren Schritte nötig – beim nächsten Skill-Start werden die Fragen 
 
 ## Deployment
 
+### Lambda (automatisch)
+
 ```bash
 git add .
 git commit -m "Neue Fragen oder Änderungen"
@@ -112,6 +114,17 @@ git push origin main
 ```
 
 GitHub Actions deployt automatisch auf AWS Lambda. Status unter **Actions** im Repository einsehen.
+
+### Interaction Model (manuell, nur bei Änderungen an `de-DE.json`)
+
+Wenn `skill-package/interactionModels/de-DE.json` geändert wurde (z. B. neue Utterances oder Slot-Werte), muss das Modell in der Alexa Console neu gebaut werden:
+
+1. [Alexa Developer Console](https://developer.amazon.com/alexa/console/ask) öffnen
+2. Skill öffnen → **Interaction Model** → JSON-Editor
+3. Inhalt von `de-DE.json` einfügen und speichern
+4. **Build Model** klicken und auf „Build Successful" warten
+
+Ohne diesen Schritt erkennt Alexa neue Utterances oder Slot-Änderungen nicht.
 
 ---
 
