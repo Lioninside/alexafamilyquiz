@@ -11,7 +11,7 @@ Bei jedem `git push` auf `main` wird die Lambda-Funktion automatisch aktualisier
 
 1. [AWS Lambda Console](https://console.aws.amazon.com/lambda) öffnen
 2. **Funktion erstellen** → „Neu erstellen"
-   - Name: `FamilyQuizSkill` (beliebig, wird als `LAMBDA_FUNCTION_NAME` Secret verwendet)
+   - Name: `alexa-quiz` (wird als `LAMBDA_FUNCTION_NAME` Secret verwendet)
    - Laufzeit: **Node.js 18.x**
    - Architektur: x86_64
 3. Unter **Konfiguration → Umgebungsvariablen** hinzufügen:
@@ -30,7 +30,7 @@ Damit Alexa auf die Lambda-Funktion zugreifen darf, muss ein **Resource-Based Po
 
 ```bash
 aws lambda add-permission \
-  --function-name FamilyQuizSkill \
+  --function-name alexa-quiz \
   --statement-id alexa-trigger \
   --action lambda:InvokeFunction \
   --principal alexa-appkit.amazon.com \
@@ -68,7 +68,7 @@ Im GitHub-Repository unter **Settings → Secrets and variables → Actions** fo
 | `AWS_ACCESS_KEY_ID` | AWS IAM Access Key (braucht `lambda:UpdateFunctionCode`) |
 | `AWS_SECRET_ACCESS_KEY` | Zugehöriger Secret Key |
 | `AWS_REGION` | AWS-Region der Lambda-Funktion (z. B. `eu-central-1`) |
-| `LAMBDA_FUNCTION_NAME` | Name der Lambda-Funktion (z. B. `FamilyQuizSkill`) |
+| `LAMBDA_FUNCTION_NAME` | Name der Lambda-Funktion: `alexa-quiz` |
 
 IAM-Policy für den Deploy-User (Mindestberechtigung):
 
@@ -78,7 +78,7 @@ IAM-Policy für den Deploy-User (Mindestberechtigung):
   "Statement": [{
     "Effect": "Allow",
     "Action": "lambda:UpdateFunctionCode",
-    "Resource": "arn:aws:lambda:REGION:ACCOUNT_ID:function:FamilyQuizSkill"
+    "Resource": "arn:aws:lambda:REGION:ACCOUNT_ID:function:alexa-quiz"
   }]
 }
 ```
