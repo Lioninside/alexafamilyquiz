@@ -2,6 +2,7 @@
 
 // Lädt Fragen aus einem öffentlichen Google Sheet (CSV-Export, kein API-Key nötig)
 const https = require('https');
+const http = require('http');
 
 // Normalisiert Text: lowercase, trimmen, Umlaute ersetzen
 function normalizeAnswer(text) {
@@ -56,7 +57,7 @@ function parseCSV(text) {
   return fragen;
 }
 
-// HTTP-GET mit automatischer Weiterleitung (max. 5 Redirects)
+// HTTP/HTTPS-GET mit automatischer Weiterleitung auf beliebige Domains (max. 5 Redirects)
 function httpsGet(url, verbleibende = 5) {
   return new Promise((resolve, reject) => {
     if (verbleibende <= 0) {
@@ -64,12 +65,19 @@ function httpsGet(url, verbleibende = 5) {
       return;
     }
 
-    https.get(url, (antwort) => {
+    const client = url.startsWith('https://') ? https : http;
+
+    client.get(url, (antwort) => {
       const { statusCode, headers } = antwort;
 
-      if ((statusCode === 301 || statusCode === 302 || statusCode === 303) && headers.location) {
+      const istRedirect = [301, 302, 303, 307, 308].includes(statusCode);
+      if (istRedirect && headers.location) {
         antwort.resume();
-        resolve(httpsGet(headers.location, verbleibende - 1));
+        // Relative Redirect-URLs gegen die aktuelle URL auflösen
+        const zielUrl = headers.location.startsWith('http')
+          ? headers.location
+          : new URL(headers.location, url).toString();
+        resolve(httpsGet(zielUrl, verbleibende - 1));
         return;
       }
 
