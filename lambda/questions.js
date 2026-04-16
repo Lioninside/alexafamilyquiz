@@ -73,6 +73,9 @@ function httpsGet(url, verbleibende = 5) {
         return;
       }
 
+      // DEBUG: finale URL nach allen Redirects
+      console.log('[DEBUG] Finale URL:', url);
+
       let daten = '';
       antwort.on('data', (chunk) => { daten += chunk; });
       antwort.on('end', () => resolve(daten));
@@ -99,7 +102,14 @@ async function loadQuestions() {
 
   const url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
   const csvText = await httpsGet(url);
+
+  // DEBUG: erste 500 Zeichen der Antwort
+  console.log('[DEBUG] csvText (erste 500 Zeichen):', csvText.slice(0, 500));
+
   const fragen = parseCSV(csvText);
+
+  // DEBUG: Anzahl geparster Fragen
+  console.log('[DEBUG] questions.length:', fragen.length);
 
   return mischen(fragen);
 }
