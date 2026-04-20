@@ -4,6 +4,7 @@ const Alexa = require('ask-sdk-core');
 const { loadQuestions, normalizeAnswer } = require('./questions');
 
 const FRAGEN_PRO_RUNDE = 15;
+const NAME = 'Rosemary';
 
 // Zufälliges Element aus einem Array
 function zufall(arr) {
@@ -12,20 +13,23 @@ function zufall(arr) {
 
 const RICHTIG_TEXTE = [
   'Bravo, das ist richtig!',
-  'Sehr gut, genau!',
-  'Ja, richtig!',
+  `Sehr gut, Rosemary!`,
+  'Ja, genau richtig!',
   'Super, das stimmt!',
   'Perfekt, richtig!',
-  'Toll, das ist korrekt!',
+  `Toll gemacht, Rosemary!`,
   'Ja, genau!',
   'Ausgezeichnet!',
+  'Wunderbar, richtig!',
+  `Klasse, Rosemary!`,
 ];
 
 const FALSCH_TEXTE = [
-  'Leider falsch, versuch es nochmal.',
-  'Das war nicht richtig, nochmal!',
-  'Nicht ganz, nochmal!',
+  'Hmm, leider falsch – versuch es nochmal.',
+  'Das war nicht ganz richtig, nochmal!',
+  `Nicht ganz, Rosemary – nochmal!`,
   'Falsch, noch ein Versuch.',
+  'Knapp daneben – nochmal!',
 ];
 
 const AUFLOESUNG_TEXTE = [
@@ -33,6 +37,7 @@ const AUFLOESUNG_TEXTE = [
   (antwort) => `Die richtige Antwort ist ${antwort}.`,
   (antwort) => `Leider falsch – es wäre ${antwort}.`,
   (antwort) => `Nicht ganz, es ist ${antwort}.`,
+  (antwort) => `Oje, die Antwort ist ${antwort}.`,
 ];
 
 const WEITER_TEXTE = [
@@ -40,14 +45,40 @@ const WEITER_TEXTE = [
   'Nächste Frage!',
   'Weiter!',
   'Auf zur nächsten Frage!',
+  'Und weiter!',
+];
+
+const START_TEXTE = [
+  `Hallo ${NAME}, bist du bereit für eine Quizrunde? Los geht's!`,
+  `Hey ${NAME}! Schön dass du da bist. Ich bin gespannt wie gut du heute bist!`,
+  `Willkommen zurück, ${NAME}! Zeig mir was du weißt.`,
+  `Na ${NAME}, bereit für ein bisschen Kopftraining? Los!`,
+  `Hi ${NAME}! Das Quiz wartet auf dich. Viel Erfolg!`,
+];
+
+const RUNDEN_TEXTE = [
+  (punkte) => `Gut gemacht, ${NAME}! Du hattest ${punkte} von ${FRAGEN_PRO_RUNDE} richtig. Weiter geht's – sage Stopp wenn du aufhören möchtest. `,
+  (punkte) => `${FRAGEN_PRO_RUNDE} Fragen geschafft! ${punkte} von ${FRAGEN_PRO_RUNDE} waren richtig. ${punkte >= 10 ? 'Stark!' : 'Weiter üben!'} Nächste Runde – oder sage Stopp. `,
+  (punkte) => `Runde beendet! ${punkte} von ${FRAGEN_PRO_RUNDE} Punkten für ${NAME}. ${punkte === FRAGEN_PRO_RUNDE ? 'Perfekte Runde!' : 'Weiter so!'} Sage Stopp zum Beenden. `,
+];
+
+const ENDE_TEXTE = [
+  (r, g) => `Gut gemacht, ${NAME}! Du hast ${r} von ${g} Fragen richtig beantwortet. Bis zum nächsten Mal!`,
+  (r, g) => `Das war's, ${NAME}! Ergebnis: ${r} von ${g} richtig. ${r === g ? 'Perfekt!' : 'Beim nächsten Mal schaffst du noch mehr!'} Tschüss!`,
+  (r, g) => `Alle Fragen beantwortet! ${r} von ${g} richtig, ${NAME}. Tolle Leistung! Auf Wiedersehen!`,
+];
+
+const STOPP_TEXTE = [
+  (r, g) => `Okay ${NAME}, wir hören auf. Du hattest ${r} von ${g} richtig. Bis bald!`,
+  (r, g) => `Schade, ${NAME}! ${r} von ${g} – das war schon gut. Tschüss!`,
+  (r, g) => `Alright, ${NAME}! Ergebnis: ${r} von ${g} richtig. Komm bald wieder!`,
 ];
 
 // Gibt Rundenbewertungstext zurück, wenn gerade 15 Fragen abgeschlossen wurden
 function getRundenbewertung(attr) {
   if (attr.totalAsked > 0 && attr.totalAsked % FRAGEN_PRO_RUNDE === 0) {
     const punkte = attr.roundScore || 0;
-    return `Das waren ${FRAGEN_PRO_RUNDE} Fragen. ${punkte} von ${FRAGEN_PRO_RUNDE} waren richtig. ` +
-      'Wenn du keine Lust mehr hast, sage einfach Stopp. Ich mache nun mit der nächsten Frage weiter. ';
+    return zufall(RUNDEN_TEXTE)(punkte);
   }
   return '';
 }
@@ -66,8 +97,9 @@ function stelleNaechsteFrage(handlerInput, praefixText) {
   handlerInput.attributesManager.setSessionAttributes(attr);
 
   if (attr.currentIndex >= attr.questions.length) {
+    const endeText = zufall(ENDE_TEXTE)(attr.score || 0, attr.totalAsked || 0);
     return handlerInput.responseBuilder
-      .speak(`${praefixText}Du hast alle Fragen beantwortet. Auf Wiedersehen!`)
+      .speak(`${praefixText}${endeText}`)
       .withShouldEndSession(true)
       .getResponse();
   }
@@ -109,7 +141,7 @@ const LaunchRequestHandler = {
 
       const ersteFrage = questions[0].question;
       return handlerInput.responseBuilder
-        .speak(`Willkommen beim FamilyQuiz! Ich stelle dir Fragen. Antworte mit einem Wort. Los geht's! ${ersteFrage}`)
+        .speak(`${zufall(START_TEXTE)} ${ersteFrage}`)
         .reprompt(ersteFrage)
         .getResponse();
     } catch (fehler) {
@@ -267,7 +299,7 @@ const StopIntentHandler = {
     const richtig = attr.score || 0;
     const gestellt = attr.totalAsked || 0;
     return handlerInput.responseBuilder
-      .speak(`Du hast ${richtig} von ${gestellt} Fragen richtig beantwortet. Tschüss!`)
+      .speak(zufall(STOPP_TEXTE)(richtig, gestellt))
       .withShouldEndSession(true)
       .getResponse();
   },
