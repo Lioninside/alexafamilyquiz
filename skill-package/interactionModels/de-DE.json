@@ -32,6 +32,29 @@
           "samples": []
         },
         {
+          "name": "WeissNichtIntent",
+          "slots": [],
+          "samples": [
+            "das weiß ich nicht",
+            "weiß nicht",
+            "keine ahnung",
+            "ich weiß es nicht",
+            "keine idee",
+            "kein plan",
+            "ich weiß das nicht",
+            "weiß ich nicht",
+            "das weiß ich leider nicht",
+            "ich hab keine ahnung",
+            "ich kapituliere",
+            "aufgeben",
+            "ich gebe auf",
+            "ich passe",
+            "passe",
+            "überspringen",
+            "nächste frage"
+          ]
+        },
+        {
           "name": "AnswerIntent",
           "slots": [
             {

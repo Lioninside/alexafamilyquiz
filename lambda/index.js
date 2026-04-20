@@ -5,6 +5,43 @@ const { loadQuestions, normalizeAnswer } = require('./questions');
 
 const FRAGEN_PRO_RUNDE = 15;
 
+// Zufälliges Element aus einem Array
+function zufall(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+const RICHTIG_TEXTE = [
+  'Bravo, das ist richtig!',
+  'Sehr gut, genau!',
+  'Ja, richtig!',
+  'Super, das stimmt!',
+  'Perfekt, richtig!',
+  'Toll, das ist korrekt!',
+  'Ja, genau!',
+  'Ausgezeichnet!',
+];
+
+const FALSCH_TEXTE = [
+  'Leider falsch, versuch es nochmal.',
+  'Das war nicht richtig, nochmal!',
+  'Nicht ganz, nochmal!',
+  'Falsch, noch ein Versuch.',
+];
+
+const AUFLOESUNG_TEXTE = [
+  (antwort) => `Schade, die Antwort wäre ${antwort} gewesen.`,
+  (antwort) => `Die richtige Antwort ist ${antwort}.`,
+  (antwort) => `Leider falsch – es wäre ${antwort}.`,
+  (antwort) => `Nicht ganz, es ist ${antwort}.`,
+];
+
+const WEITER_TEXTE = [
+  'Weiter geht\'s!',
+  'Nächste Frage!',
+  'Weiter!',
+  'Auf zur nächsten Frage!',
+];
+
 // Gibt Rundenbewertungstext zurück, wenn gerade 15 Fragen abgeschlossen wurden
 function getRundenbewertung(attr) {
   if (attr.totalAsked > 0 && attr.totalAsked % FRAGEN_PRO_RUNDE === 0) {
@@ -121,7 +158,7 @@ const AnswerIntentHandler = {
       attr.totalAsked++;
       const rundenText = getRundenbewertung(attr);
       handlerInput.attributesManager.setSessionAttributes(attr);
-      return stelleNaechsteFrage(handlerInput, `Bravo! ${rundenText}`);
+      return stelleNaechsteFrage(handlerInput, `${zufall(RICHTIG_TEXTE)} ${rundenText}`);
     }
 
     if (attr.attempts === 0) {
@@ -129,7 +166,7 @@ const AnswerIntentHandler = {
       attr.attempts = 1;
       handlerInput.attributesManager.setSessionAttributes(attr);
       return handlerInput.responseBuilder
-        .speak(`Falsch, versuch es nochmal. ${aktFrage.question}`)
+        .speak(`${zufall(FALSCH_TEXTE)} ${aktFrage.question}`)
         .reprompt(aktFrage.question)
         .getResponse();
     }
@@ -139,10 +176,37 @@ const AnswerIntentHandler = {
     attr.totalAsked++;
     const rundenText = getRundenbewertung(attr);
     handlerInput.attributesManager.setSessionAttributes(attr);
-    return stelleNaechsteFrage(
-      handlerInput,
-      `Die richtige Antwort ist ${aktFrage.answer}. Weiter geht's. ${rundenText}`,
+    const aufloesungsText = `${zufall(AUFLOESUNG_TEXTE)(aktFrage.answer)} ${zufall(WEITER_TEXTE)} ${rundenText}`;
+    return stelleNaechsteFrage(handlerInput, aufloesungsText);
+  },
+};
+
+// WeissNichtIntent: Nutzer gibt auf – Antwort sofort auflösen und weiter
+const WeissNichtIntentHandler = {
+  canHandle(handlerInput) {
+    return (
+      Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+      Alexa.getIntentName(handlerInput.requestEnvelope) === 'WeissNichtIntent'
     );
+  },
+  handle(handlerInput) {
+    const attr = handlerInput.attributesManager.getSessionAttributes();
+    const { questions, currentIndex } = attr;
+
+    if (!questions || currentIndex >= questions.length) {
+      return handlerInput.responseBuilder
+        .speak('Kein aktives Quiz. Sage "Starte FamilyQuiz" um zu beginnen.')
+        .withShouldEndSession(true)
+        .getResponse();
+    }
+
+    const aktFrage = questions[currentIndex];
+    attr.currentIndex++;
+    attr.totalAsked++;
+    const rundenText = getRundenbewertung(attr);
+    handlerInput.attributesManager.setSessionAttributes(attr);
+    const aufloesungsText = `${zufall(AUFLOESUNG_TEXTE)(aktFrage.answer)} ${zufall(WEITER_TEXTE)} ${rundenText}`;
+    return stelleNaechsteFrage(handlerInput, aufloesungsText);
   },
 };
 
@@ -240,6 +304,7 @@ exports.handler = Alexa.SkillBuilders.custom()
   .addRequestHandlers(
     LaunchRequestHandler,
     AnswerIntentHandler,
+    WeissNichtIntentHandler,
     FallbackIntentHandler,
     StopIntentHandler,
     SessionEndedRequestHandler,
