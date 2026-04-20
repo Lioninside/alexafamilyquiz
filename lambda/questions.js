@@ -119,7 +119,8 @@ async function loadQuestions() {
   // DEBUG: Anzahl geparster Fragen
   console.log('[DEBUG] questions.length:', fragen.length);
 
-  return mischen(fragen);
+  // Max. 45 Fragen pro Session (3 Runden à 15) – hält sessionAttributes unter dem 24 KB Alexa-Limit
+  return mischen(fragen).slice(0, 45);
 }
 
 module.exports = { loadQuestions, normalizeAnswer };

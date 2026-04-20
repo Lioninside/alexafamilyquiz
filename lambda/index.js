@@ -108,6 +108,7 @@ function stelleNaechsteFrage(handlerInput, praefixText) {
   return handlerInput.responseBuilder
     .speak(`${praefixText}${frage}`)
     .reprompt(frage)
+    .withShouldEndSession(false)
     .getResponse();
 }
 
@@ -200,6 +201,7 @@ const AnswerIntentHandler = {
       return handlerInput.responseBuilder
         .speak(`${zufall(FALSCH_TEXTE)} ${aktFrage.question}`)
         .reprompt(aktFrage.question)
+        .withShouldEndSession(false)
         .getResponse();
     }
 
@@ -273,6 +275,7 @@ const FallbackIntentHandler = {
       return handlerInput.responseBuilder
         .speak(aktFrage.question)
         .reprompt(aktFrage.question)
+        .withShouldEndSession(false)
         .getResponse();
     }
 
