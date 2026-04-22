@@ -1,6 +1,6 @@
-# FamilyQuiz – Alexa Skill
+# Simple Quiz – Alexa Skill
 
-Persönlicher Quiz-Skill für Alexa. Fragen werden aus einem Google Sheet geladen.
+Ein Quiz-Skill für Alexa. Fragen werden aus einem Google Sheet geladen.
 Bei jedem `git push` auf `main` wird die Lambda-Funktion automatisch aktualisiert.
 
 ---
@@ -26,7 +26,7 @@ Bei jedem `git push` auf `main` wird die Lambda-Funktion automatisch aktualisier
 4. Den Lambda-ARN aus Schritt 1 eintragen
 5. Speichern
 
-Damit Alexa auf die Lambda-Funktion zugreifen darf, muss ein **Resource-Based Policy** auf der Lambda-Funktion vorhanden sein. Entweder automatisch über die Alexa Console oder manuell über die AWS CLI:
+Damit Alexa auf die Lambda-Funktion zugreifen darf:
 
 ```bash
 aws lambda add-permission \
@@ -57,11 +57,15 @@ Beispiel:
    `https://docs.google.com/spreadsheets/d/**HIER_IST_DIE_ID**/edit`
 6. In AWS Lambda unter **Konfiguration → Umgebungsvariablen**: `GOOGLE_SHEET_ID` = die kopierte ID
 
+> **Hinweis:** Die Sheet-ID ist eine zentrale Einstellung des Skill-Betreibers.
+> Alle Nutzer spielen mit denselben Fragen. Eine individuelle Konfiguration
+> per Sprache ist nicht möglich, da Sheet-IDs nicht diktierbar sind.
+
 ---
 
 ### 4. GitHub Secrets konfigurieren
 
-Im GitHub-Repository unter **Settings → Secrets and variables → Actions** folgende Secrets anlegen:
+Im GitHub-Repository unter **Settings → Secrets and variables → Actions**:
 
 | Secret | Beschreibung |
 |---|---|
@@ -88,8 +92,53 @@ IAM-Policy für den Deploy-User (Mindestberechtigung):
 ### 5. Beta-Test: Tester einladen
 
 1. In der Alexa Developer Console unter **Distribution → Beta Test**
-2. Tester einladen: `huber.rosemary@gmail.com`
+2. Tester einladen (z. B. `huber.rosemary@gmail.com`)
 3. Der Tester erhält eine E-Mail und kann den Skill in der Alexa-App aktivieren
+
+---
+
+## Skill veröffentlichen (Checkliste)
+
+Folgende Schritte sind vor der Zertifizierung durch Amazon erforderlich:
+
+### Icons (zwingend)
+
+Zwei PNG-Icons hochladen unter **Build → Skill Icon**:
+- `108 × 108 px` (kleines Icon)
+- `512 × 512 px` (großes Icon)
+
+Empfehlungen: transparenter Hintergrund, kein Text, einfaches Motiv (z. B. Fragezeichen).
+
+### Privacy Policy (zwingend)
+
+Eine öffentlich erreichbare Privacy Policy URL ist für die Zertifizierung Pflicht.
+Minimaler Inhalt: welche Daten verarbeitet werden (keine personenbezogenen Daten, keine Speicherung).
+
+In `skill-package/skill.json` eintragen:
+```json
+"privacyPolicyUrl": "https://DEINE_URL/privacy"
+```
+
+### Lambda ARN eintragen
+
+In `skill-package/skill.json`:
+```json
+"uri": "arn:aws:lambda:REGION:ACCOUNT_ID:function:alexa-quiz"
+```
+
+### Skill-Manifest hochladen
+
+Inhalt von `skill-package/skill.json` in der Alexa Console unter
+**Distribution → Skill Preview** eintragen.
+
+### Interaction Model neu bauen
+
+Nach dem letzten Änderungen: **Build Model** in der Alexa Console.
+
+### Einreichen
+
+**Distribution → Submission** → Zertifizierung beantragen.
+Amazon prüft üblicherweise innerhalb von 3–5 Werktagen.
 
 ---
 
@@ -100,6 +149,7 @@ Einfach im Google Sheet neue Zeilen hinzufügen:
 - Spalte B: Antwort (ein Wort, kleingeschrieben)
 
 Keine weiteren Schritte nötig – beim nächsten Skill-Start werden die Fragen automatisch geladen.
+Pro Session werden zufällig 90 von allen verfügbaren Fragen ausgewählt.
 
 ---
 
@@ -113,27 +163,23 @@ git commit -m "Neue Fragen oder Änderungen"
 git push origin main
 ```
 
-GitHub Actions deployt automatisch auf AWS Lambda. Status unter **Actions** im Repository einsehen.
+GitHub Actions deployt automatisch auf AWS Lambda.
 
 ### Interaction Model (manuell, nur bei Änderungen an `de-DE.json`)
-
-Wenn `skill-package/interactionModels/de-DE.json` geändert wurde (z. B. neue Utterances oder Slot-Werte), muss das Modell in der Alexa Console neu gebaut werden:
 
 1. [Alexa Developer Console](https://developer.amazon.com/alexa/console/ask) öffnen
 2. Skill öffnen → **Interaction Model** → JSON-Editor
 3. Inhalt von `de-DE.json` einfügen und speichern
 4. **Build Model** klicken und auf „Build Successful" warten
 
-Ohne diesen Schritt erkennt Alexa neue Utterances oder Slot-Änderungen nicht.
-
 ---
 
 ## Quiz-Ablauf
 
-- **Starten:** „Alexa, starte Family Quiz"
+- **Starten:** „Alexa, starte Simple Quiz"
 - **Antworten:** Antwort mit einem Wort nennen
+- **Nicht wissen:** „Weiß nicht" oder „Keine Ahnung" → Antwort wird aufgelöst
 - **Beenden:** „Stopp" oder „Abbrechen"
 
-Pro Runde werden 15 zufällige Fragen gestellt. Nach jeder Runde wird der Punktestand angesagt und das Quiz geht mit den nächsten Fragen weiter.
-
+Pro Runde werden 15 zufällige Fragen gestellt. Nach jeder Runde wird der Punktestand angesagt.
 Antwortvergleich ist tolerant gegenüber Groß-/Kleinschreibung und Umlauten (ä→ae, ö→oe, ü→ue, ß→ss).

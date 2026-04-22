@@ -1,0 +1,59 @@
+{
+  "manifest": {
+    "manifestVersion": "1.0",
+    "publishingInformation": {
+      "locales": {
+        "de-DE": {
+          "name": "Simple Quiz",
+          "summary": "Ein Quizspiel mit Fragen aus verschiedenen Wissensgebieten. Antworte mit einem Wort!",
+          "description": "Teste dein Wissen mit dem Simple Quiz!\n\nAlexa stellt dir Fragen aus verschiedenen Themen – Geografie, Tiere, Geschichte, Natur und vieles mehr. Antworte einfach mit einem Wort.\n\nFunktionen:\n• 15 Fragen pro Runde, zufällig gemischt\n• Zwei Versuche pro Frage\n• Punkteauswertung nach jeder Runde\n• Sage \"weiß nicht\" um eine Frage zu überspringen\n• Sage \"Stopp\" um jederzeit zu beenden\n\nSo startest du: \"Alexa, starte Simple Quiz\"",
+          "examplePhrases": [
+            "Alexa, starte Simple Quiz",
+            "Alexa, öffne Simple Quiz",
+            "Alexa, spiele Simple Quiz"
+          ],
+          "keywords": [
+            "quiz",
+            "wissen",
+            "trivia",
+            "rätsel",
+            "lernen",
+            "fragen",
+            "allgemeinwissen",
+            "spiel"
+          ],
+          "smallIconUri": "https://PLACEHOLDER_108x108.png",
+          "largeIconUri": "https://PLACEHOLDER_512x512.png"
+        }
+      },
+      "isAvailableWorldwide": false,
+      "testingInstructions": "1. Starte den Skill mit \"Alexa, starte Simple Quiz\"\n2. Beantworte die gestellte Frage mit einem einzelnen Wort\n3. Teste \"weiß nicht\" zum Überspringen\n4. Teste \"Stopp\" zum Beenden",
+      "category": "GAMES",
+      "distributionCountries": [
+        "DE",
+        "AT",
+        "CH"
+      ]
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "PLACEHOLDER_LAMBDA_ARN"
+        }
+      }
+    },
+    "privacyAndCompliance": {
+      "allowsPurchases": false,
+      "usesPersonalInfo": false,
+      "isChildDirected": false,
+      "isExportCompliant": true,
+      "containsAds": false,
+      "locales": {
+        "de-DE": {
+          "privacyPolicyUrl": "https://PLACEHOLDER_PRIVACY_POLICY_URL",
+          "termsOfUseUrl": ""
+        }
+      }
+    }
+  }
+}

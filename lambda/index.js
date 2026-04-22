@@ -4,7 +4,6 @@ const Alexa = require('ask-sdk-core');
 const { loadQuestions, normalizeAnswer } = require('./questions');
 
 const FRAGEN_PRO_RUNDE = 15;
-const NAME = 'Rosemary';
 
 // Zufälliges Element aus einem Array
 function zufall(arr) {
@@ -13,21 +12,21 @@ function zufall(arr) {
 
 const RICHTIG_TEXTE = [
   'Bravo, das ist richtig!',
-  `Sehr gut, Rosemary!`,
+  'Sehr gut!',
   'Ja, genau richtig!',
   'Super, das stimmt!',
   'Perfekt, richtig!',
-  `Toll gemacht, Rosemary!`,
+  'Toll gemacht!',
   'Ja, genau!',
   'Ausgezeichnet!',
   'Wunderbar, richtig!',
-  `Klasse, Rosemary!`,
+  'Klasse!',
 ];
 
 const FALSCH_TEXTE = [
   'Hmm, leider falsch – versuch es nochmal.',
   'Das war nicht ganz richtig, nochmal!',
-  `Nicht ganz, Rosemary – nochmal!`,
+  'Nicht ganz – nochmal!',
   'Falsch, noch ein Versuch.',
   'Knapp daneben – nochmal!',
 ];
@@ -49,29 +48,29 @@ const WEITER_TEXTE = [
 ];
 
 const START_TEXTE = [
-  `Hallo ${NAME}, bist du bereit für eine Quizrunde? Los geht's!`,
-  `Hey ${NAME}! Schön dass du da bist. Ich bin gespannt wie gut du heute bist!`,
-  `Willkommen zurück, ${NAME}! Zeig mir was du weißt.`,
-  `Na ${NAME}, bereit für ein bisschen Kopftraining? Los!`,
-  `Hi ${NAME}! Das Quiz wartet auf dich. Viel Erfolg!`,
+  'Hallo! Bist du bereit für eine Quizrunde? Los geht\'s!',
+  'Hey! Schön dass du da bist. Ich bin gespannt wie gut du heute bist!',
+  'Willkommen beim Simple Quiz! Zeig mir was du weißt.',
+  'Na, bereit für ein bisschen Kopftraining? Los!',
+  'Hi! Das Quiz wartet auf dich. Viel Erfolg!',
 ];
 
 const RUNDEN_TEXTE = [
-  (punkte) => `Gut gemacht, ${NAME}! Du hattest ${punkte} von ${FRAGEN_PRO_RUNDE} richtig. Weiter geht's – sage Stopp wenn du aufhören möchtest. `,
+  (punkte) => `Gut gemacht! Du hattest ${punkte} von ${FRAGEN_PRO_RUNDE} richtig. Weiter geht's – sage Stopp wenn du aufhören möchtest. `,
   (punkte) => `${FRAGEN_PRO_RUNDE} Fragen geschafft! ${punkte} von ${FRAGEN_PRO_RUNDE} waren richtig. ${punkte >= 10 ? 'Stark!' : 'Weiter üben!'} Nächste Runde – oder sage Stopp. `,
-  (punkte) => `Runde beendet! ${punkte} von ${FRAGEN_PRO_RUNDE} Punkten für ${NAME}. ${punkte === FRAGEN_PRO_RUNDE ? 'Perfekte Runde!' : 'Weiter so!'} Sage Stopp zum Beenden. `,
+  (punkte) => `Runde beendet! ${punkte} von ${FRAGEN_PRO_RUNDE} Punkten. ${punkte === FRAGEN_PRO_RUNDE ? 'Perfekte Runde!' : 'Weiter so!'} Sage Stopp zum Beenden. `,
 ];
 
 const ENDE_TEXTE = [
-  (r, g) => `Gut gemacht, ${NAME}! Du hast ${r} von ${g} Fragen richtig beantwortet. Bis zum nächsten Mal!`,
-  (r, g) => `Das war's, ${NAME}! Ergebnis: ${r} von ${g} richtig. ${r === g ? 'Perfekt!' : 'Beim nächsten Mal schaffst du noch mehr!'} Tschüss!`,
-  (r, g) => `Alle Fragen beantwortet! ${r} von ${g} richtig, ${NAME}. Tolle Leistung! Auf Wiedersehen!`,
+  (r, g) => `Gut gemacht! Du hast ${r} von ${g} Fragen richtig beantwortet. Bis zum nächsten Mal!`,
+  (r, g) => `Das war's! Ergebnis: ${r} von ${g} richtig. ${r === g ? 'Perfekt!' : 'Beim nächsten Mal schaffst du noch mehr!'} Tschüss!`,
+  (r, g) => `Alle Fragen beantwortet! ${r} von ${g} richtig. Tolle Leistung! Auf Wiedersehen!`,
 ];
 
 const STOPP_TEXTE = [
-  (r, g) => `Okay ${NAME}, wir hören auf. Du hattest ${r} von ${g} richtig. Bis bald!`,
-  (r, g) => `Schade, ${NAME}! ${r} von ${g} – das war schon gut. Tschüss!`,
-  (r, g) => `Alright, ${NAME}! Ergebnis: ${r} von ${g} richtig. Komm bald wieder!`,
+  (r, g) => `Okay, wir hören auf. Du hattest ${r} von ${g} richtig. Bis bald!`,
+  (r, g) => `Schade! ${r} von ${g} – das war schon gut. Tschüss!`,
+  (r, g) => `Alright! Ergebnis: ${r} von ${g} richtig. Komm bald wieder!`,
 ];
 
 // Gibt Rundenbewertungstext zurück, wenn gerade 15 Fragen abgeschlossen wurden

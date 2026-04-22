@@ -1,7 +1,7 @@
 {
   "interactionModel": {
     "languageModel": {
-      "invocationName": "family quiz",
+      "invocationName": "simple quiz",
       "intents": [
         {
           "name": "AMAZON.CancelIntent",
