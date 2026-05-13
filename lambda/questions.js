@@ -1,10 +1,8 @@
 'use strict';
 
-// Lädt Fragen aus einem öffentlichen Google Sheet (CSV-Export, kein API-Key nötig)
 const https = require('https');
 const http = require('http');
 
-// Normalisiert Text: lowercase, trimmen, Umlaute ersetzen
 function normalizeAnswer(text) {
   return text
     .toLowerCase()
@@ -15,7 +13,6 @@ function normalizeAnswer(text) {
     .replace(/ß/g, 'ss');
 }
 
-// Einfaches CSV-Parsing mit Unterstützung für Anführungszeichen
 function parseCSVLine(line) {
   const felder = [];
   let aktuell = '';
@@ -35,7 +32,6 @@ function parseCSVLine(line) {
   return felder;
 }
 
-// CSV-Text in Fragenliste umwandeln (erste Zeile = Überschriften, wird übersprungen)
 function parseCSV(text) {
   const zeilen = text.split('\n');
   const fragen = [];
@@ -57,7 +53,6 @@ function parseCSV(text) {
   return fragen;
 }
 
-// HTTP/HTTPS-GET mit automatischer Weiterleitung auf beliebige Domains (max. 5 Redirects)
 function httpsGet(url, verbleibende = 5) {
   return new Promise((resolve, reject) => {
     if (verbleibende <= 0) {
@@ -81,9 +76,6 @@ function httpsGet(url, verbleibende = 5) {
         return;
       }
 
-      // DEBUG: finale URL nach allen Redirects
-      console.log('[DEBUG] Finale URL:', url);
-
       let daten = '';
       antwort.on('data', (chunk) => { daten += chunk; });
       antwort.on('end', () => resolve(daten));
@@ -91,7 +83,7 @@ function httpsGet(url, verbleibende = 5) {
   });
 }
 
-// Fragen zufällig mischen (Fisher-Yates)
+// Fisher-Yates
 function mischen(array) {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -101,7 +93,6 @@ function mischen(array) {
   return arr;
 }
 
-// Fragen aus Google Sheets laden, mischen und zurückgeben
 async function loadQuestions() {
   const sheetId = process.env.GOOGLE_SHEET_ID;
   if (!sheetId) {
@@ -110,14 +101,7 @@ async function loadQuestions() {
 
   const url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
   const csvText = await httpsGet(url);
-
-  // DEBUG: erste 500 Zeichen der Antwort
-  console.log('[DEBUG] csvText (erste 500 Zeichen):', csvText.slice(0, 500));
-
   const fragen = parseCSV(csvText);
-
-  // DEBUG: Anzahl geparster Fragen
-  console.log('[DEBUG] questions.length:', fragen.length);
 
   // Max. 30 Fragen pro Session (2 Runden à 15) – garantiert unter dem 24 KB Alexa Response-Limit
   return mischen(fragen).slice(0, 30);
