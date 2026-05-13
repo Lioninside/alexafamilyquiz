@@ -82,6 +82,28 @@ function getRundenbewertung(attr) {
   return '';
 }
 
+// Session Attributes holen – bei fehlendem questions-Array neu von Google Sheets laden
+async function getAttr(handlerInput) {
+  const attr = handlerInput.attributesManager.getSessionAttributes();
+  if (!attr.questions || attr.questions.length === 0) {
+    console.log('[WARN] questions fehlen in sessionAttributes – lade neu');
+    const questions = await loadQuestions();
+    const vollAttr = {
+      questions,
+      currentIndex: attr.currentIndex || 0,
+      score: attr.score || 0,
+      roundScore: attr.roundScore || 0,
+      totalAsked: attr.totalAsked || 0,
+      attempts: attr.attempts || 0,
+      repeatCount: attr.repeatCount || 0,
+    };
+    handlerInput.attributesManager.setSessionAttributes(vollAttr);
+    return vollAttr;
+  }
+  console.log('[DEBUG] sessionAttr – index:', attr.currentIndex, 'questions:', attr.questions.length);
+  return attr;
+}
+
 // Stellt die nächste Frage oder beendet die Session, wenn alle Fragen aufgebraucht sind
 function stelleNaechsteFrage(handlerInput, praefixText) {
   const attr = handlerInput.attributesManager.getSessionAttributes();
@@ -162,13 +184,13 @@ const AnswerIntentHandler = {
       Alexa.getIntentName(handlerInput.requestEnvelope) === 'AnswerIntent'
     );
   },
-  handle(handlerInput) {
-    const attr = handlerInput.attributesManager.getSessionAttributes();
+  async handle(handlerInput) {
+    const attr = await getAttr(handlerInput);
     const { questions, currentIndex } = attr;
 
-    if (!questions || currentIndex >= questions.length) {
+    if (currentIndex >= questions.length) {
       return handlerInput.responseBuilder
-        .speak('Kein aktives Quiz. Sage "Starte FamilyQuiz" um zu beginnen.')
+        .speak('Kein aktives Quiz. Sage "Starte Simple Quiz" um zu beginnen.')
         .withShouldEndSession(true)
         .getResponse();
     }
@@ -222,13 +244,13 @@ const WeissNichtIntentHandler = {
       Alexa.getIntentName(handlerInput.requestEnvelope) === 'WeissNichtIntent'
     );
   },
-  handle(handlerInput) {
-    const attr = handlerInput.attributesManager.getSessionAttributes();
+  async handle(handlerInput) {
+    const attr = await getAttr(handlerInput);
     const { questions, currentIndex } = attr;
 
-    if (!questions || currentIndex >= questions.length) {
+    if (currentIndex >= questions.length) {
       return handlerInput.responseBuilder
-        .speak('Kein aktives Quiz. Sage "Starte FamilyQuiz" um zu beginnen.')
+        .speak('Kein aktives Quiz. Sage "Starte Simple Quiz" um zu beginnen.')
         .withShouldEndSession(true)
         .getResponse();
     }
@@ -251,13 +273,13 @@ const FallbackIntentHandler = {
       Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.FallbackIntent'
     );
   },
-  handle(handlerInput) {
-    const attr = handlerInput.attributesManager.getSessionAttributes();
+  async handle(handlerInput) {
+    const attr = await getAttr(handlerInput);
     const { questions, currentIndex } = attr;
 
-    if (!questions || currentIndex >= questions.length) {
+    if (currentIndex >= questions.length) {
       return handlerInput.responseBuilder
-        .speak('Kein aktives Quiz. Sage "Starte FamilyQuiz" um zu beginnen.')
+        .speak('Kein aktives Quiz. Sage "Starte Simple Quiz" um zu beginnen.')
         .withShouldEndSession(true)
         .getResponse();
     }
