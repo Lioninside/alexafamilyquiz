@@ -50,7 +50,7 @@ const WEITER_TEXTE = [
 const START_TEXTE = [
   'Hallo! Bist du bereit für eine Quizrunde? Los geht\'s!',
   'Hey! Schön dass du da bist. Ich bin gespannt wie gut du heute bist!',
-  'Willkommen beim Familien Quiz! Zeig mir was du weißt.',
+  'Willkommen beim Simple Quiz! Zeig mir was du weißt.',
   'Na, bereit für ein bisschen Kopftraining? Los!',
   'Hi! Das Quiz wartet auf dich. Viel Erfolg!',
 ];
@@ -190,7 +190,7 @@ const AnswerIntentHandler = {
 
     if (currentIndex >= questions.length) {
       return handlerInput.responseBuilder
-        .speak('Kein aktives Quiz. Sage "Starte Familien Quiz" um zu beginnen.')
+        .speak('Kein aktives Quiz. Sage "Starte Simple Quiz" um zu beginnen.')
         .withShouldEndSession(true)
         .getResponse();
     }
@@ -250,7 +250,7 @@ const WeissNichtIntentHandler = {
 
     if (currentIndex >= questions.length) {
       return handlerInput.responseBuilder
-        .speak('Kein aktives Quiz. Sage "Starte Familien Quiz" um zu beginnen.')
+        .speak('Kein aktives Quiz. Sage "Starte Simple Quiz" um zu beginnen.')
         .withShouldEndSession(true)
         .getResponse();
     }
@@ -279,7 +279,7 @@ const FallbackIntentHandler = {
 
     if (currentIndex >= questions.length) {
       return handlerInput.responseBuilder
-        .speak('Kein aktives Quiz. Sage "Starte Familien Quiz" um zu beginnen.')
+        .speak('Kein aktives Quiz. Sage "Starte Simple Quiz" um zu beginnen.')
         .withShouldEndSession(true)
         .getResponse();
     }
