@@ -149,7 +149,7 @@ Einfach im Google Sheet neue Zeilen hinzufügen:
 - Spalte B: Antwort (ein Wort, kleingeschrieben)
 
 Keine weiteren Schritte nötig – beim nächsten Skill-Start werden die Fragen automatisch geladen.
-Pro Session werden zufällig 90 von allen verfügbaren Fragen ausgewählt.
+Pro Session werden zufällig 30 von allen verfügbaren Fragen ausgewählt.
 
 ---
 
